@@ -5,6 +5,7 @@ class BlogsController < ApplicationController
 
   before_action :set_blog, only: %i[show edit update destroy]
   before_action :owned_user?, except: %i[index show new create]
+  before_action :secret?, only: %i[show]
 
   def index
     @blogs = Blog.search(params[:term]).published.default_order
@@ -54,5 +55,9 @@ class BlogsController < ApplicationController
 
   def owned_user?
     current_user.blogs.find(params[:id])
+  end
+
+  def secret?
+    User.find_by!(id: current_user&.id) && owned_user? if @blog.secret?
   end
 end
