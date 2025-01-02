@@ -4,6 +4,7 @@ class BlogsController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[index show]
 
   before_action :set_blog, only: %i[show edit update destroy]
+  before_action :owned_user?, except: %i[index show new create]
 
   def index
     @blogs = Blog.search(params[:term]).published.default_order
@@ -49,5 +50,9 @@ class BlogsController < ApplicationController
 
   def blog_params
     params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
+  end
+
+  def owned_user?
+    current_user.blogs.find(params[:id])
   end
 end
