@@ -24,8 +24,6 @@ class BlogsController < ApplicationController
 
     if @blog.save
       redirect_to blog_url(@blog), notice: 'Blog was successfully created.'
-    elsif @blog.errors[:random_eyecatch].present?
-      redirect_to root_path, alert: 'The random eye-catching is feature for Premium Users.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -34,8 +32,6 @@ class BlogsController < ApplicationController
   def update
     if @blog.update(blog_params)
       redirect_to blog_url(@blog), notice: 'Blog was successfully updated.'
-    elsif @blog.errors[:random_eyecatch].present?
-      redirect_to root_path, alert: 'The random eye-catching is feature for Premium Users.'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -54,7 +50,11 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
+    if current_user.premium
+      params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
+    else
+      params.require(:blog).permit(:title, :content, :secret)
+    end
   end
 
   def owned_user?
