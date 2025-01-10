@@ -45,13 +45,13 @@ class BlogsController < ApplicationController
 
   private
 
+  def set_blog
+    @blog = current_user.blogs.find(params[:id])
+  end
+
   def blog_params
     blog_attributes = %i[title content secret]
     blog_attributes.push(:random_eyecatch) if current_user.premium
     params.require(:blog).permit(blog_attributes)
-  end
-
-  def set_blog
-    @blog = current_user.blogs.find(params[:id])
   end
 end
